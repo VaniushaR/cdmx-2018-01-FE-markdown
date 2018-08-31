@@ -1,0 +1,30 @@
+{
+  "name": "markdownlinkvalidator",
+  "version": "1.0.0",
+  "description": "Is a markdown link validator to look for broken links or invalid links that should be remove or changed in your project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VaniushaR/cdmx-2018-01-FE-markdown.git"
+  },
+  "keywords": [
+    "markdown",
+    "links",
+    "validator"
+  ],
+  "author": "Vania Ramírez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VaniushaR/cdmx-2018-01-FE-markdown/issues"
+  },
+  "homepage": "https://github.com/VaniushaR/cdmx-2018-01-FE-markdown#readme",
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  },
+  "devdependencies": {
+    "jest": "^23.5.0"
+  }
+}
