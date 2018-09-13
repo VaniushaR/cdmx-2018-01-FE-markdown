@@ -27,5 +27,8 @@
   },
   "devdependencies": {
     "jest": "^23.5.0"
+  },
+  "dependencies": {
+    "node-fetch": "^2.2.0"
   }
 }
