@@ -1,91 +1,80 @@
-console.log('hello word');
-let userFile = 'js/read.md';
-const fs = require('fs');
+const userFile = 'js/read.md';
+let htmlFile = {}; // Objeto inicial htmlFile
+let markedFile;
+let arrayTotal = [];
+const fs = require('fs'); //modules requirements Core Node Modules
 const pathExt = require('path');
-const notValid = 'Not valid type file';
-const mdLinks = (path, callback) => {
-  console.log('file type' + pathExt.extname(path));
-  const userTypeFile = pathExt.extname(path);
+const myMarked = require('marked'); //modules requirements form another NPM libraries
+const fetch = require('node-fetch'); //fecth require
 
+const mdLinks = (path, options) => {
+  const userTypeFile = pathExt.extname(path);
   if (userTypeFile !== '.md') {
-    console.log('Incorrect type file!' + userTypeFile);
-    return notValid;
-  } else {
-    console.log('correct type file' + userTypeFile);
-    fs.readFile(path, 'utf8', (error, file) => {
-      if (error) {
-        console.log('Hay un error' + error);
-      } else {
-        console.log(file);
-        callback();
-      }
-    });
+    return console.log(
+      'Incorrect type file! please give a .md file to review' +
+        userTypeFile +
+        ' is not an accepted file type'
+    );
   }
+  console.log('correct type file' + userTypeFile);
+  fs.readFile(path, 'utf8', (error, file) => {
+    if (error) {
+      return console.log('Hay un error' + error);
+    }
+    linkSearcher(file); //function to find the links and text aboit links
+  });
 };
 
-mdLinks(userFile, function() {
-  console.log('hola vania');
-});
+const linkSearcher = file => {
+  htmlFile = myMarked(file); //Variables to keep matches
+  const regExprLink = /href="(.*?)"/gi; //Give a regular expression to find the links in the href html tag, include lower and upper case
+  const regExprATag = />[^<]*<[ ]*\/a[ ]*>/gi; //Give a regular expression to find the <a> html tag content, include lower and upper case
+  const linkMatchesKeeper = htmlFile.match(regExprLink); //create new var  to keep the matches finded with the patterns of the regularexpr:
+  const aTagMatchesKeeper = htmlFile.match(regExprATag);
+  return stringCleaner(linkMatchesKeeper);
+  stringTagCleanner(aTagMatchesKeeper);
+};
 
-// var data = fs.readFile('js/read.txt', 'utf8');
-// console.log(data);
+const stringCleaner = stringstoClean => {
+  const arrayOfLinkStrings = stringstoClean.map(
+    item => (arrayTotal = item.slice(6, -1))
+  );
+  console.log('arrarTOTAL', arrayTotal);
+  return linkValidator(arrayOfLinkStrings);
+};
 
-//Segundo intento
-// var express = require('express');
-// var app = express();
+const stringTagCleanner = stringstoClean => {
+  const arrayOfTagStrings = stringstoClean.map(item => item.slice(1, -4));
+  return arrayOfTagStrings;
+};
 
-// app.get = ('/', (req, res) => {
-//   res.send('Hello World')
-// })
+const linkValidator = arrayOfLinks => {
+  arrayOfLinks.forEach(item => {
+    fetch(item)
+      .then(res => {
+        console.log(item, res.status, res.ok);
+      })
+      .catch(err => console.log(err));
+  });
+};
 
-// app.listen(3000)
+//invocación mdLinks
+mdLinks(
+  userFile,
+  (options = (stats, validate) => {
+    console.log('Leyendo función de callback');
+  })
+);
+// //promesa const promesa = () => {new Promise((resolve, reject) =>{ if(problema{reject(variable1)} resolve(variablecorrecta) )})}
+// promesa.then() // mdLinks().then((res) => { return linkValidator(res) })
+// mdLinks(userFile)
+//   .then(linkSearcher(file))
+//   .then(stringCleaner(linkMatchesKeeper), stringTagCleanner(aTagMatchesKeeper))
+//   .then(linkValidator(arrayOfLinkStrings))
+//   .then(console.log('final result:', objectRes))
+//   .catch('error', error);
 
-// const searchingLinksFile = inputFile => {
-//   (fs = require('fs')),
-//     (readline = require('readline')),
-//     (instream = fs.createReadStream(imputFile)),
-//     (outstream = new (require('stream'))()),
-//     (rl = readline.createInterface(instream, outstream));
-
-//   rl.on('line', function(line) {
-//     console.log(line);
-//   });
-//   rl.on('close', function(line) {
-//     console.log(line);
-//     console.log('donde reading file.');
-//   });
-// };
-// searchingLinksFile('read.txt');
-
-//Primer intento:
-// const mdLinks = require('md-links');
-
-// mdLinks('./some/example.md')
-//   .then(links => {
-//     // => [{ href, text, file }]
-//   })
-//   .catch(console.error);
-
-// mdLinks('./some/example.md', { validate: true })
-//   .then(links => {
-//     // => [{ href, text, file, status, ok }]
-//   })
-//   .catch(console.error);
-
-// mdLinks('./some/example.md', { stats: true })
-//   .then(links => {
-//     // => [{total, unique }]
-//   })
-//   .catch(console.error);
-
-// mdLinks('./some/example.md', { stats: true, validate: true })
-//   .then(links => {
-//     // => [{total, unique, broken }]
-//   })
-//   .catch(console.error);
-
-// mdLinks('./some/dir')
-//   .then(links => {
-//     // => [{ href, text, file }]
-//   })
-//   .catch(console.error);
+//export to testing
+module.exports = {
+  mdLinks
+};
